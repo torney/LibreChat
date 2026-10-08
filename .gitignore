@@ -194,6 +194,10 @@ scripts/activity-labels/results/
 /.lighthouse/
 /e2e/lighthouse/.test-results/
 
+# Chrome user-data directories a Lighthouse run leaves in the repository root when the browser
+# is handed a Windows profile path from WSL: the whole path arrives as one directory name.
+/*lighthouse.[0-9]*/
+
 # Local deployment artifacts (this fork) — never commit image tarballs
 .zcode/
 docker/*.tar.gz
