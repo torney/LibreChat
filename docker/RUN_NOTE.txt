@@ -1,0 +1,49 @@
+cd E:\Work\WXZX-2026\SVN\Agents-Projects\Branchs\DEV_20260924_nsmc_inner_agent\02.code\02.inner_agent_web\agent_web_project\LibreChat\docker
+## 当前目录进入 wsl 环境
+wsl -u root
+或
+wsl -d Ubuntu-26.04  -u root
+
+
+## 改代码后重新构建（构建 + 打标签，首次约 15-40 分钟，自动带 git 版本元数据）
+bash /mnt/e/Work/WXZX-2026/SVN/Agents-Projects/Branchs/DEV_20260924_nsmc_inner_agent/02.code/02.inner_agent_web/agent_web_project/LibreChat/docker/build.sh
+
+- 短命令（已进入本目录的 wsl 时）
+bash build.sh
+
+## 构建完先验证（临时 mongo + 临时容器，轮询 /health，测完自动清理，不碰现有数据）
+bash /mnt/e/Work/WXZX-2026/SVN/Agents-Projects/Branchs/DEV_20260924_nsmc_inner_agent/02.code/02.inner_agent_web/agent_web_project/LibreChat/docker/verify.sh
+
+- 短命令
+bash verify.sh
+
+## 验证通过后导出 tar.gz（默认 librechat-dev-api-custom.tar.gz，输出在本 docker/ 目录）
+bash /mnt/e/Work/WXZX-2026/SVN/Agents-Projects/Branchs/DEV_20260924_nsmc_inner_agent/02.code/02.inner_agent_web/agent_web_project/LibreChat/docker/save.sh
+
+- 短命令
+bash save.sh
+
+
+## ============ 部署服务器侧 ============
+
+## 1. 导入镜像（tar.gz 拷到服务器后）
+docker load -i librechat-dev-api-custom.tar.gz
+
+## 2. deploy-compose.yml 中 api 服务 image 替换（只改这一行）：
+##      image: registry.librechat.ai/librechat-ai/librechat-dev-api:latest
+##      改为
+##      image: librechat-dev-api:custom
+##    （离线发布包 06.发布/01.原生images/librechat 场景：原用 ghcr.io/danny-avila/librechat-dev:latest
+##     经 docker-compose.override.yml 改写，同样只把该镜像名换成 librechat-dev-api:custom，
+##     其余 mongo/meilisearch/pgvector/rag 镜像 tar 不变）
+
+## 3. 重建 api 容器（其余服务不动）
+docker compose -f deploy-compose.yml up -d api
+
+
+## 备注
+- 只改 librechat.yaml / .env / skill/ 时不用重新打包：restart api 即可
+  docker compose -f deploy-compose.yml restart api
+- 验证镜像时若离线，先 docker load 发布包里的 mongo.tar（即 mongo:8.0.20），verify.sh 不会再联网拉取
+- 旧导出镜像移入 his_images/ 归档，避免 docker/ 目录膨胀
+- 详细说明见同目录 README.md

@@ -1,0 +1,14 @@
+
+
+## 启动数据库(不用操作，已连接198)
+"E:/soft/tools/mongodb-windows-x86_64-8.0.20/bin/mongod.exe" --dbpath "C:/Users/tonen/.local/var/mongodb" --bind_ip 127.0.0.1 --port 27017
+
+
+## 启动服务
+cd E:\Work\WXZX-2026\SVN\Agents-Projects\Branchs\DEV_20260924_nsmc_inner_agent\02.code\02.inner_agent_web\agent_web_project\LibreChat
+
+## 后端 api 服务启动
+npm run backend:dev
+
+## 前端 api 服务启动
+npm run frontend:dev

@@ -193,3 +193,9 @@ scripts/activity-labels/results/
 !e2e/lighthouse/librechat.yaml
 /.lighthouse/
 /e2e/lighthouse/.test-results/
+
+# Local deployment artifacts (this fork) — never commit image tarballs
+.zcode/
+docker/*.tar.gz
+docker/his_images/
+docs/api-dev.zip
